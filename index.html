@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	  <script type="text/javascript"  src="js/jquery-3.3.1.min.js"></script>
+      <script type="text/javascript" src="js/instascan.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+      <script  src="https://cdn.rawgit.com/GoogleChrome/pwacompat/v1.0.3/pwacompat.min.js"></script>
+      <link rel="stylesheet" href="css/style.css"></link>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="mobile-web-app-capable" content="yes">
+
+      <link rel="manifest" href="manifest.json">
+
+      <title>QR Code Scanner</title>
+
+
+  </head>
+
+  <body>
+    <h1> Scanner </h1>
+  	<div  ng-app="myApp" ng-controller="Controller">
+
+       <video id="preview" width="100%" height="auto"></video>
+
+    <div id="produtoLido"></div>
+ 
+	</div>
+  
+  </body>
+  <script type="text/javascript">
+  	
+  </script>
+    <script>
+      //This is the service worker with the Cache-first network
+
+      //Add this below content to your HTML page, or add the js file to your page at the very top to register sercie worker
+      if (navigator.serviceWorker.controller) {
+        console.log('[PWA Builder] active service worker found, no need to register')
+      } else {
+
+      //Register the ServiceWorker
+        navigator.serviceWorker.register('pwabuilder-sw.js', {
+          scope: './'
+        }).then(function(reg) {
+          console.log('Service worker has been registered for scope:'+ reg.scope);
+        });
+      }
+    	var app = angular.module("myApp", []);
+    	app.controller("Controller", function($scope){
+    
+			let scan = new Instascan.Scanner({video: document.getElementById('preview'), mirror:false});
+	  		scan.addListener('scan', function(content){
+	  			$("#produtoLido").html(content);
+          alert(content);
+	  			console.log(content);
+	  		});
+	  		Instascan.Camera.getCameras().then(function(cameras){
+	  			if(cameras.length > 0){
+	  				scan.start(cameras[cameras.length - 1]);
+	  			}else{
+	  				console.error("Camera Não encontrada");
+	  			}
+	  		}).catch(function(e){
+	  			console.error(e);
+	  		});
+
+
+    	});
+  	
+    </script>
+</html>
